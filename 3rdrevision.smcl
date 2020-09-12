@@ -1,0 +1,68 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}C:\Users\ngoca\Dropbox\Pubs_since_2018\2018-Intra-Asian-FDI\Economic-Modelling\3rd submission\3rdrevision.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}27 Jul 2020, 20:28:06
+{txt}
+{com}. set matsize 10000
+{txt}
+{com}. use DATA, clear
+{txt}(Panel data for bilateral FDI of 35 Asian countries)
+
+{com}. //log using All-Tables, text  replace
+. global withfe sumgdp gdpdifsq  gdpter tradecost_s  tradecost_h  terdif tradeter investcost_h  dist gdpdif bit contig comlang_ethno comcol y* idh* ids*
+{txt}
+{com}. global nofe   sumgdp gdpdifsq  gdpter tradecost_s  tradecost_h  terdif tradeter investcost_h  dist gdpdif bit contig comlang_ethno comcol y* 
+{txt}
+{com}. 
+. 
+{txt}end of do-file
+
+{com}. do "C:\Users\ngoca\AppData\Local\Temp\STD468c_000000.tmp"
+{txt}
+{com}. qui tobit stock0 $withfe, ll(0) vce(cluster dist)
+{txt}
+{com}. qui predict double fitT
+{txt}
+{com}. 
+{txt}end of do-file
+
+{com}. sum fitT
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 8}fitT {c |}{res}     10,596   -6.827601    7.469408  -28.70646   53.45057
+
+{com}. do "C:\Users\ngoca\AppData\Local\Temp\STD468c_000000.tmp"
+{txt}
+{com}. qui ppml stock0 $withfe, cluster(dist)
+{err}WARNING: gdpdifsq has very large values, consider rescaling  or recentering
+WARNING: tradecost_s has very large values, consider rescaling  or recentering
+WARNING: tradecost_h has very large values, consider rescaling  or recentering
+WARNING: tradeter has very large values, consider rescaling  or recentering
+WARNING: investcost_h has very large values, consider rescaling  or recentering
+Number of regressors excluded to ensure that the estimates exist: 6
+Number of observations excluded: 0
+{txt}
+{com}. qui predict double fitP
+{txt}
+{com}. 
+{txt}end of do-file
+
+{com}. sum fitP
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 8}fitP {c |}{res}     10,596    .7486232    4.477439   1.06e-07    96.0599
+
+{com}. do "C:\Users\ngoca\AppData\Local\Temp\STD468c_000000.tmp"
+{txt}
+{com}. qui churdle exponential stock0 $withfe , select($withfe) ll(0) vce(cluster dist)
+{txt}
+{com}. qui predict double fitL
+{txt}
+{com}. 
+{txt}end of do-file
+
+{com}. exit, clear
